@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "gitCompany": "",
+    "baseName": "documentCar",
+    "packageName": "fr.avdev4j.documentcar",
+    "packageFolder": "fr/avdev4j/documentcar",
+    "serverPort": 8080,
+    "serviceDiscoveryType": false,
+    "authenticationType": "jwt",
+    "uaaBaseName": "../uaa",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "enableSwaggerCodegen": false,
+    "messageBroker": false,
+    "buildTool": "maven",
+    "useSass": false,
+    "clientPackageManager": "npm",
+    "testFrameworks": [],
+    "enableTranslation": false,
+    "nativeLanguage": "en",
+    "languages": [
+      "en"
+    ],
+    "clientFramework": "angularX",
+    "jhiPrefix": "jhi",
+    "jhipsterVersion": "5.7.0",
+    "jwtSecretKey": "MWZlNmM3OGUzMjY5Mzc0OTk2MDJmOTZiNDczZWQ1Njg2NzNmYzJkYmViY2NjZTM2Mzc5ZTQwNTBjZTcyZDExZjBiZjQ3NTNlYjEwNzdiNjBkMDA2NTQ2MzFiMWI4NDYxMzI4NmEyNzQ3MWU2M2ViNmUzZWRhMGIyOGM3NmZjOWM=",
+    "otherModules": []
+  },
+  "git-provider": "GitHub",
+  "git-company": "avdev4j",
+  "repository-name": "jhipster-documentCar"
+}
