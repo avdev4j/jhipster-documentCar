@@ -2,6 +2,7 @@ package fr.avdev4j.documentcar.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import fr.avdev4j.documentcar.domain.Car;
+import fr.avdev4j.documentcar.domain.Document;
 import fr.avdev4j.documentcar.repository.CarRepository;
 import fr.avdev4j.documentcar.web.rest.errors.BadRequestAlertException;
 import fr.avdev4j.documentcar.web.rest.util.HeaderUtil;
@@ -10,11 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +51,29 @@ public class CarResource {
         if (car.getId() != null) {
             throw new BadRequestAlertException("A new car cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        Car result = carRepository.save(car);
+        return ResponseEntity.created(new URI("/api/cars/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    @PostMapping("/v2/cars")
+    @Timed
+    public ResponseEntity<Car> createCar(@Valid @RequestPart Car car, @RequestPart MultipartFile[] files) throws URISyntaxException, IOException {
+        log.debug("REST request to save Car : {}", car);
+        if (car.getId() != null) {
+            throw new BadRequestAlertException("A new car cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+
+        for (MultipartFile file : files) {
+            Document document = new Document();
+            document.setTitle(file.getOriginalFilename());
+            document.setSize(file.getSize());
+            document.setMimeType(file.getContentType());
+            document.addContent(file.getBytes());
+            car.addDocument(document);
+        }
+
         Car result = carRepository.save(car);
         return ResponseEntity.created(new URI("/api/cars/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))

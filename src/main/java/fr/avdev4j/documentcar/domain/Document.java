@@ -1,5 +1,6 @@
 package fr.avdev4j.documentcar.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -36,7 +37,9 @@ public class Document implements Serializable {
     @Column(name = "mime_type")
     private String mimeType;
 
-    @OneToOne    @JoinColumn(unique = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(unique = true)
+    @JsonIgnore
     private Content content;
 
     @ManyToOne(optional = false)
@@ -101,8 +104,16 @@ public class Document implements Serializable {
         return this;
     }
 
-    public void setContent(Content content) {
+    public void addContent(byte[] data) {
+        Content content = new Content();
+        content.setData(data);
+        // this is redundant here, we should remove it
+        content.setDataContentType("a content type");
         this.content = content;
+    }
+
+    public byte[] retrieveContent(){
+        return content.getData();
     }
 
     public Car getCar() {
