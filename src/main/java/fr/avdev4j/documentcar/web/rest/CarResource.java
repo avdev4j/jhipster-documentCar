@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import fr.avdev4j.documentcar.domain.Car;
 import fr.avdev4j.documentcar.domain.Document;
 import fr.avdev4j.documentcar.repository.CarRepository;
+import fr.avdev4j.documentcar.service.mapper.DocumentMapper;
 import fr.avdev4j.documentcar.web.rest.errors.BadRequestAlertException;
 import fr.avdev4j.documentcar.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -19,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * REST controller for managing Car.
@@ -32,9 +34,11 @@ public class CarResource {
     private static final String ENTITY_NAME = "car";
 
     private final CarRepository carRepository;
+    private final DocumentMapper documentMapper;
 
-    public CarResource(CarRepository carRepository) {
+    public CarResource(CarRepository carRepository, DocumentMapper documentMapper) {
         this.carRepository = carRepository;
+        this.documentMapper = documentMapper;
     }
 
     /**
@@ -59,20 +63,14 @@ public class CarResource {
 
     @PostMapping("/v2/cars")
     @Timed
-    public ResponseEntity<Car> createCar(@Valid @RequestPart Car car, @RequestPart MultipartFile[] files) throws URISyntaxException, IOException {
+    public ResponseEntity<Car> createCar(@Valid @RequestPart Car car, @RequestPart List<MultipartFile> files) throws URISyntaxException, IOException {
         log.debug("REST request to save Car : {}", car);
         if (car.getId() != null) {
             throw new BadRequestAlertException("A new car cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        for (MultipartFile file : files) {
-            Document document = new Document();
-            document.setTitle(file.getOriginalFilename());
-            document.setSize(file.getSize());
-            document.setMimeType(file.getContentType());
-            document.addContent(file.getBytes());
-            car.addDocument(document);
-        }
+        Set<Document> documents = documentMapper.multiPartFilesToDocuments(files);
+        documents.forEach(car::addDocument);
 
         Car result = carRepository.save(car);
         return ResponseEntity.created(new URI("/api/cars/" + result.getId()))

@@ -1,11 +1,10 @@
 package fr.avdev4j.documentcar.web.rest;
 
 import fr.avdev4j.documentcar.DocumentCarApp;
-
 import fr.avdev4j.documentcar.domain.Car;
 import fr.avdev4j.documentcar.repository.CarRepository;
+import fr.avdev4j.documentcar.service.mapper.DocumentMapper;
 import fr.avdev4j.documentcar.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-
 
 import static fr.avdev4j.documentcar.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +44,9 @@ public class CarResourceIntTest {
     private CarRepository carRepository;
 
     @Autowired
+    private DocumentMapper documentMapper;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -64,7 +65,7 @@ public class CarResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CarResource carResource = new CarResource(carRepository);
+        final CarResource carResource = new CarResource(carRepository, documentMapper);
         this.restCarMockMvc = MockMvcBuilders.standaloneSetup(carResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
