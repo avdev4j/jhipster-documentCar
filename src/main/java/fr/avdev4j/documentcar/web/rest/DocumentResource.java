@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -109,7 +108,7 @@ public class DocumentResource {
     @GetMapping("/documents/{id}/$content")
     @Timed
     public ResponseEntity getDocumentContent(@PathVariable Long id) {
-        Document document = documentRepository.findByIdWithContentFetched(id)
+        Document document = documentRepository.findOneById(id)
             .orElseThrow(DocumentNotFoundException::new);
 
         return ResponseEntity.ok()
